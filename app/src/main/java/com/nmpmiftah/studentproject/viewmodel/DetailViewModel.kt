@@ -15,11 +15,13 @@ import com.nmpmiftah.studentproject.model.Student
 class DetailViewModel(application: Application):
                                         AndroidViewModel(application) {
     val studentLD = MutableLiveData<Student>()
+    val errorLD = MutableLiveData<Boolean>()
     private var TAG = "volley_tag"
     private var queue: RequestQueue?= null
 
     fun fetch(id:String) {
         val url =  "https://www.jsonkeeper.com/b/LLMW"
+        errorLD.value = false
 
         var stringRequest = StringRequest(
             Request.Method.GET, url,
@@ -32,6 +34,7 @@ class DetailViewModel(application: Application):
             },
             {
                 Log.e("volley_status", it.message.toString())
+                errorLD.value = true
             })
         stringRequest.tag = TAG
         queue?.add(stringRequest)
@@ -41,4 +44,8 @@ class DetailViewModel(application: Application):
       //  studentLD.value = student1
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        queue?.cancelAll(TAG)
+    }
 }
